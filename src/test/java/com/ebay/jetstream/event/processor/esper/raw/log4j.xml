@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Pulsar
+Copyright (C) 2013-2015 eBay Software Foundation
+Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE for full terms.
+  -->
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+   <appender name="terminal" class="org.apache.log4j.ConsoleAppender">
+      <param name="Threshold" value="DEBUG"/>
+      <param name="Target" value="System.out"/>
+      <layout class="org.apache.log4j.PatternLayout">
+         <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+      </layout>
+   </appender>
+
+   <logger name="net.esper.client.Configuration">
+      <level value="INFO"/>
+   </logger>
+
+   <!-- 
+   		Modify to DEBUG for more output, or INFO for less output 
+   	-->  
+   <logger name="net.esper.example">
+      <level value="DEBUG"/>
+   </logger>
+
+
+   <logger name="com.ebay.jetstream.test">
+      <level value="INFO"/>
+   </logger>
+
+
+
+   <!-- 
+   		Disable output for specific listeners via this statement
+   <logger name="net.esper.example.transaction.RealtimeSummaryGroupListener">
+      <level value="INFO"/>
+   </logger>
+   	-->
+
+   <logger name="net.esper">
+      <level value="WARN"/>
+   </logger>
+
+   <root>
+      <level value="WARN"/>
+      <appender-ref ref="terminal"/>
+   </root>
+   
+</log4j:configuration>

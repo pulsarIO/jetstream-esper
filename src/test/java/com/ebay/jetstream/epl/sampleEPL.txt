@@ -1,0 +1,106 @@
+
+         
+
+		/* ---------- Routing for RTD events ----------- */
+		/* If ip is present, notify ip stream */
+        INSERT INTO RTD_IP_STREAM 
+        	SELECT ip, rid, Math.round(cost/1000) as cost, EPLUtils.getEventOrigin(*) as res_type
+        	FROM RTD(ip is not null and uid is null and cguid is null);
+        	
+        select field_0, count(field_0) as googlebotcount from RTD where field_0 = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)' group  by field_0 output  snapshot when terminated order by count(field_0) desc;	
+        	
+        /* If userid is present, notify user stream */
+        INSERT INTO RTD_USER_STREAM 
+        	SELECT uid, rid, Math.round(cost/1000) as cost, EPLUtils.getEventOrigin(*) as res_type
+        	FROM RTD(ip is not null and uid is not null);
+        	
+        /* If cguid is present, send to cguid stream */
+        INSERT INTO RTD_GUID_STREAM 
+        	SELECT cguid, rid, Math.round(cost/1000) as cost, EPLUtils.getEventOrigin(*) as res_type
+        	FROM RTD(ip is not null and cguid is not null);
+        	
+        /* ---------- Routing for RTDBLK events ----------- */
+        /* If ip is present, notify ip stream */
+        INSERT INTO RTDBLK_IP_STREAM 
+        	SELECT ip, uid, cguid, rid, flag, host, EPLUtils.getEventOrigin(*) as res_type
+        	FROM RTDBLK(ip is not null and sid=1);
+        	
+        /* If userid is present, notify user stream */
+        INSERT INTO RTDBLK_USER_STREAM 
+        	SELECT ip, uid, cguid, rid, flag, host, EPLUtils.getEventOrigin(*) as res_type
+        	FROM RTDBLK(ip is not null and sid=2);
+        	
+        /* If cguid is present, send to cguid stream */
+        INSERT INTO RTDBLK_GUID_STREAM 
+        	SELECT ip, uid, cguid, rid, flag, host, EPLUtils.getEventOrigin(*) as res_type
+        	FROM RTDBLK(ip is not null and sid=3);
+        
+        /* the pattern fires every 2 minutes. i.e. to send an TABLE_CHECKER_STREAM event from each ER node
+           With affinity key, one and only one RTD node will receive the envents{heartbeat=1} 
+        ***/
+        INSERT INTO TABLE_CHECKER_STREAM 
+        	SELECT EPLUtils.getHostName() as sourcehost,
+                   1 as heartbeat FROM pattern [every timer:interval(120 sec)];
+		@ClusterAffinityTag(colname="heartbeat")
+		@OutputTo("outboundMessageChannel")
+		SELECT * FROM TABLE_CHECKER_STREAM;
+        
+        /* ------- Affinity association for RTD -------*/
+        @ClusterAffinityTag(colname="ip")
+        @OutputTo("outboundMessageChannel")
+        SELECT * FROM RTD_IP_STREAM;
+        
+        @ClusterAffinityTag(colname="uid") 
+        @OutputTo("outboundMessageChannel")
+        SELECT * FROM RTD_USER_STREAM;		
+         
+		@ClusterAffinityTag(colname="cguid")
+		@OutputTo("outboundMessageChannel")
+		SELECT * FROM RTD_GUID_STREAM;
+		
+		/* ------- Affinity association for RTDBLK -------*/
+		@ClusterAffinityTag(colname="ip")
+        @OutputTo("outboundMessageChannel")
+        SELECT * FROM RTDBLK_IP_STREAM;
+        
+        @ClusterAffinityTag(colname="uid") 
+        @OutputTo("outboundMessageChannel")
+        SELECT * FROM RTDBLK_USER_STREAM;		
+         
+		@ClusterAffinityTag(colname="cguid")
+		@OutputTo("outboundMessageChannel")
+		SELECT * FROM RTDBLK_GUID_STREAM;
+		
+		/* --- Create RAW_EVENT_STREAM for RTD ---- */
+		INSERT INTO RAW_EVENT_LOG
+			SELECT cguid, ip, id, 
+			EPLUtils.getEventType(*) as EVENT_TYPE,
+			EPLUtils.getEventOrigin(*) AS EVENT_SOURCE,
+			EPLUtils.toTimestamp(current_timestamp) AS EVENT_TIME,
+			toJson(*) AS RAW_EVENT 
+		FROM RTD(ip is not null);
+			
+		/* --- Create RAW_EVENT_STREAM for RTDBLK ---- */
+		INSERT INTO RAW_EVENT_LOG
+			SELECT cguid, ip, id, 
+			EPLUtils.getEventType(*) as EVENT_TYPE,
+			EPLUtils.getEventOrigin(*) AS EVENT_SOURCE,
+			EPLUtils.toTimestamp(current_timestamp) AS EVENT_TIME,
+			toJson(*) AS RAW_EVENT 
+		FROM RTDBLK(ip is not null and sid is not null);	
+					
+		/* Write the raw event log */
+		@OutputTo("DbWriter")
+		@DBInfo(mode=WriteMode.INSERT_ONLY)
+		SELECT coalesce(cguid, ip) as UUID,
+			   id AS EVENT_ID,
+			   ip AS CLIENT_IP,
+			   EVENT_TYPE,
+			   EVENT_SOURCE,
+			   EVENT_TIME,
+			   RAW_EVENT,
+			   EPLUtils.toTimestamp(current_timestamp + 86400000) as EXPIRATION_TIME
+		FROM RAW_EVENT_LOG;
+		
+        
+      

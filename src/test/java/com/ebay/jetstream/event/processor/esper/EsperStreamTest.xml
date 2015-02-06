@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Pulsar
+Copyright (C) 2013-2015 eBay Software Foundation
+Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE for full terms.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"
+	default-lazy-init="true">
+
+	<!--
+		############################################################
+		#  Logging Configuration
+		############################################################
+		# You can use a different file by specifying a filename
+		# with the java.util.logging.config.file system property.
+		# For example java -Djava.util.logging.config.file=myfile
+		############################################################
+	-->
+	<bean id="LoggingConfiguration"
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		lazy-init="false">
+		<property name="targetClass"
+			value="com.ebay.jetstream.config.ConfigUtils" />
+		<property name="targetMethod" value="setLoggingProperties" />
+		<property name="arguments">
+			<props>
+				<!--
+					######################
+					#  	Global properties
+					######################
+					# "handlers" specifies a comma separated list of log Handler
+					# classes.  These handlers will be installed during VM startup.
+					# Note that these classes must be on the system classpath.
+					# By default we only configure a ConsoleHandler, which will only
+					# show messages at the INFO and above levels.
+				-->
+				<prop key="handlers">
+					java.util.logging.ConsoleHandler,
+					com.ebay.jetstream.logging.jetstreamLogAdapter
+				</prop>
+				<!--
+					#  global logging level.
+					# This specifies which kinds of events are logged across
+					# all loggers.  For any given facility this global level
+					# can be overriden by a facility specific level
+					# Note that the ConsoleHandler also has a separate level
+					# setting to limit messages printed to the console.
+				-->
+				<prop key=".level">INFO</prop>
+				<!--
+					######################
+					# Handler specific properties.
+					# Describes specific configuration info for Handlers.
+					######################
+					# default file output is in user's home directory (user.home).
+				-->
+				<!--
+					# Limit the message that are printed on the console
+				-->
+				<prop key="java.util.logging.ConsoleHandler.level">
+					INFO
+				</prop>
+				<prop
+					key="java.util.logging.ConsoleHandler.formatter">
+					java.util.logging.SimpleFormatter
+				</prop>
+				<prop
+					key="com.ebay.jetstream.logging.jetstreamLogAdapter.level">
+					INFO
+				</prop>
+				<prop
+					key="com.ebay.jetstream.logging.jetstreamLogAdapter.formatter">
+					java.util.logging.SimpleFormatter
+				</prop>
+				<!--
+					######################
+					# Facility specific properties.
+					# Provides extra control for each logger.
+					######################
+					# For example, set the com.xyz.foo logger to only log SEVERE
+					# messages:
+					# com.xyz.foo.level = SEVERE
+					# com.ebay.jetstream.servicegateway = FINE
+				-->
+			</props>
+		</property>
+	</bean>
+
+	<bean id="EsperConfiguration"
+		class="com.ebay.jetstream.event.processor.esper.EsperConfiguration">
+		<property name="internalTimerEnabled" value="false" />
+		<property name="msecResolution" value="1" />
+		<property name="declaredEvents">
+			<bean
+				class="com.ebay.jetstream.event.processor.esper.EsperDeclaredEvents">
+				<property name="eventTypes">
+					<list>
+						<bean
+							class="com.ebay.jetstream.event.processor.esper.MapEvent">
+							<property name="eventAlias"
+								value="identityChanged" />
+							<property name="eventFields">
+								<map>
+									<!-- TODO -->
+								</map>
+							</property>
+						</bean>
+						<bean
+							class="com.ebay.jetstream.event.processor.esper.MapEvent">
+							<property name="eventAlias"
+								value="linkChanged" />
+							<property name="eventFields">
+								<map>
+									<!-- TODO -->
+								</map>
+							</property>
+						</bean>
+						<bean
+							class="com.ebay.jetstream.event.processor.esper.MapEvent">
+							<property name="eventAlias"
+								value="applyTransaction" />
+							<property name="eventFields">
+								<map>
+									<entry key="guidType"
+										value="java.lang.String" />
+									<entry key="guid"
+										value="java.lang.Long" />
+									<entry key="tranId"
+										value="java.lang.String" />
+									<entry key="res.created"
+										value="java.lang.String" />
+									<entry key="platform"
+										value="java.lang.String" />
+									<entry key="transactionStatus"
+										value="java.lang.String" />
+									<entry key="amount"
+										value="java.lang.Double" />
+								</map>
+							</property>
+						</bean>
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="EPL" class="com.ebay.jetstream.event.processor.esper.EPL">
+		<property name="statementBlock">
+			<value>
+				<![CDATA[
+				INSERT INTO modifiedApplyTransaction SELECT modified.* as applyTransaction FROM applyTransaction AS event, method:com.ebay.jetstream.event.processor.esper.EsperStreamTest.tagEvent(event, "INVALID", 1) AS modified;
+				SELECT applyTransaction.* FROM modifiedApplyTransaction /*$OUTPUT*/;
+				]]>
+			</value>
+		</property>
+	</bean>
+
+	<bean id="InboundMessageBinder"
+		class="com.ebay.jetstream.event.support.channel.ChannelBinding">
+		<property name="channel" ref="InboundMessages" />
+	</bean>
+
+	<bean id="InboundMessages"
+		class="com.ebay.jetstream.event.channel.debugsupport.StreamChannel">
+		<property name="streamName" value="${jetstream}/Development/Azure/test/cobalt.dump" />
+		<property name="eventSinks">
+			<list>
+				<ref bean="Processor" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="EsperListener" class="com.ebay.jetstream.event.processor.esper.EsperEventListener"></bean>
+
+	<bean id="Processor"
+		class="com.ebay.jetstream.event.processor.esper.EsperEventProcessor">
+		<property name="esperEventListener" ref="EsperListener"></property>
+		<property name="configuration" ref="EsperConfiguration" />
+		<property name="epl" ref="EPL" />
+		<property name="eventSinks">
+			<list>
+				<ref bean="OutboundMessages" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="OutboundMessageBinder"
+		class="com.ebay.jetstream.event.support.channel.ChannelBinding">
+		<property name="channel" ref="OutboundMessages" />
+	</bean>
+
+	<bean id="OutboundMessages"
+		class="com.ebay.jetstream.event.channel.debugsupport.StreamChannel">
+		<property name="streamName" value="${jetstream}/Development/Azure/test/cobalt.new" />
+	</bean>
+</beans>

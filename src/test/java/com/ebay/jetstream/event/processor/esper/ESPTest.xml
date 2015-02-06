@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Pulsar
+Copyright (C) 2013-2015 eBay Software Foundation
+Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE for full terms.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"
+  default-lazy-init="true">
+
+ 
+  <bean id="EsperConfiguration" class="com.ebay.jetstream.event.processor.esper.EsperConfiguration" scope="singleton">
+    <property name="declaredEvents">
+      <bean class="com.ebay.jetstream.event.processor.esper.EsperDeclaredEvents">
+	        <property name="eventTypes">
+	          <list>
+	            <bean class="com.ebay.jetstream.event.processor.esper.MapEventType">
+	              <property name="eventAlias" value="ESPTestEvent1"/>
+	              <property name="eventFields">
+	                <map>
+	                  <entry key="id" value="java.lang.Integer"/>
+	                  <entry key="field1" value="java.lang.String"/>
+	                  <entry key="field2" value="java.util.List"/>
+	                  <entry key="field3" value="com.ebay.jetstream.event.processor.esper.EsperTestEventField"/>
+	                  <entry key="field4" value="java.lang.Double"/>
+	                </map>
+	              </property>
+	            </bean>
+
+	            <bean class="com.ebay.jetstream.event.processor.esper.MapEventType">
+	              <property name="eventAlias" value="ESPAggregationTestEvent"/>
+	              <property name="eventFields">
+	                <map>
+					  <entry key="jetstream.event.worker_id" value="java.lang.Integer" />
+	                  <entry key="field_id" value="java.lang.Integer"/>
+	                  <entry key="field" value="java.lang.Double"/>
+	                </map>
+	              </property>
+	            </bean>
+				<bean class="com.ebay.jetstream.event.processor.esper.MapEventType">
+					<property name="eventAlias" value="CleanupEvent" />
+					<property name="eventFields">
+						<map>
+							<entry key="WorkerId" value="java.lang.Integer" />
+						</map>
+					</property>
+				</bean>
+				<bean class="com.ebay.jetstream.event.processor.esper.MapEventType">
+					<property name="eventAlias" value="OutputEvent" />
+					<property name="eventFields">
+						<map>
+							<entry key="WorkerId" value="java.lang.Integer" />
+							<entry key="field_id" value="java.lang.Integer" />
+							<entry key="AggregatedResult" value="java.lang.Double" />
+						</map>
+					</property>
+				</bean>
+	          </list>
+	        </property>
+      </bean>
+    </property>
+
+	<property name="timeSourceNano" value="true" />
+    <property name="listenerDispatchTimeout" value="1000" />
+    <property name="listenerDispatchPreserveOrder" value="false" />
+    <property name="insertIntoDispatchTimeout" value="100" />
+    <property name="insertIntoDispatchPreserveOrder" value="false" />
+    <property name="threadPoolSize" value="20"/>
+    <property name="queueSizeLimit" value="40"/>
+	<property name="executionLogging" value="true" />
+	<property name="timerLogging" value="false" />
+	<property name="autoImport">
+		<list>
+			<value>java.lang.Math</value>
+			<value>com.ebay.jetstream.epl.EPLUtilities</value>
+			<value>com.ebay.jetstream.identity.client.IdentityClient</value>
+			<value>com.ebay.jetstream.azure.client.AzureClient</value>
+		</list>
+	</property>
+  </bean>
+
+
+  <bean id="EsperConfigurationOneEnginePerThread" class="com.ebay.jetstream.event.processor.esper.EsperConfiguration" scope="singleton">
+    <property name="declaredEvents">
+      <bean class="com.ebay.jetstream.event.processor.esper.EsperDeclaredEvents">
+	        <property name="eventTypes">
+	          <list>
+	            <bean class="com.ebay.jetstream.event.processor.esper.MapEventType">
+	              <property name="eventAlias" value="ESPTestEvent1"/>
+	              <property name="eventFields">
+	                <map>
+	                  <entry key="id" value="java.lang.Integer"/>
+	                  <entry key="field1" value="java.lang.String"/>
+	                  <entry key="field2" value="java.util.List"/>
+	                  <entry key="field3" value="com.ebay.jetstream.event.processor.esper.EsperTestEventField"/>
+	                  <entry key="field4" value="java.lang.Double"/>
+	                </map>
+	              </property>
+	            </bean>
+
+	            <bean class="com.ebay.jetstream.event.processor.esper.MapEventType">
+	              <property name="eventAlias" value="ESPAggregationTestEvent"/>
+	              <property name="eventFields">
+	                <map>
+					  <entry key="jetstream.event.worker_id" value="java.lang.Integer" />
+	                  <entry key="field_id" value="java.lang.Integer"/>
+	                  <entry key="field" value="java.lang.Double"/>
+	                </map>
+	              </property>
+	            </bean>
+				<!-- 
+					Cleanup event must have one and only one field: WorkerId 
+					(or whatever it's named in workerIdentifier property of OnDemandQuery bean) 
+				-->
+				<bean class="com.ebay.jetstream.event.processor.esper.MapEventType">
+					<property name="eventAlias" value="CleanupEvent" />
+					<property name="eventFields">
+						<map>
+							<entry key="WorkerId" value="java.lang.Integer" />
+						</map>
+					</property>
+				</bean>
+				<bean class="com.ebay.jetstream.event.processor.esper.MapEventType">
+					<property name="eventAlias" value="OutputEvent" />
+					<property name="eventFields">
+						<map>
+							<entry key="WorkerId" value="java.lang.Integer" />
+							<entry key="field_id" value="java.lang.Integer" />
+							<entry key="AggregatedResult" value="java.lang.Double" />
+						</map>
+					</property>
+				</bean>
+	          </list>
+	        </property>
+      </bean>
+    </property>
+
+	<property name="timeSourceNano" value="true" />
+    <property name="listenerDispatchTimeout" value="1000" />
+    <property name="listenerDispatchPreserveOrder" value="false" />
+    <property name="insertIntoDispatchTimeout" value="100" />
+    <property name="insertIntoDispatchPreserveOrder" value="false" />
+    <property name="threadPoolSize" value="3"/>
+    <property name="queueSizeLimit" value="40"/>
+	<property name="executionLogging" value="true" />
+	<property name="timerLogging" value="false" />
+	<property name="autoImport">
+		<list>
+			<value>java.lang.Math</value>
+			<value>com.ebay.jetstream.epl.EPLUtilities</value>
+			<value>com.ebay.jetstream.identity.client.IdentityClient</value>
+			<value>com.ebay.jetstream.azure.client.AzureClient</value>
+		</list>
+	</property>
+  </bean>
+
+  <bean id="EsperConfigurationSync" class="com.ebay.jetstream.event.processor.esper.EsperConfiguration" scope="singleton">
+    <property name="internalTimerEnabled" value="false" />
+    <property name="msecResolution" value="1" />
+    <property name="declaredEvents">
+      <bean class="com.ebay.jetstream.event.processor.esper.EsperDeclaredEvents">
+        <property name="eventTypes">
+          <list>
+            <bean class="com.ebay.jetstream.event.processor.esper.MapEventType">
+              <property name="eventAlias" value="ESPTestEvent1"/>
+              <property name="eventFields">
+                <map>
+                  <entry key="id" value="java.lang.Integer"/>
+                  <entry key="field1" value="java.lang.String"/>
+                  <entry key="field2" value="java.util.List"/>
+                  <entry key="field3" value="com.ebay.jetstream.event.processor.esper.EsperTestEventField"/>
+                </map>
+              </property>
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="listenerDispatchTimeout" value="1000" />
+    <property name="listenerDispatchPreserveOrder" value="false" />
+    <property name="insertIntoDispatchTimeout" value="100" />
+    <property name="insertIntoDispatchPreserveOrder" value="false" />
+    <property name="threadPoolSize" value="20"/>
+    <property name="queueSizeLimit" value="40"/>
+  </bean>
+
+
+  <bean id="ESPTestEPL1" class="com.ebay.jetstream.event.processor.esper.EPL" scope="singleton">
+    <property name="statementBlock">
+      <value>
+      <![CDATA[
+      		select id, cast(field1, double) as field1, field2, field3 from ESPTestEvent1 ;
+      ]]>
+      </value>
+    </property>
+  </bean>
+
+  <bean id="ESPTestEPL2" class="com.ebay.jetstream.event.processor.esper.EPL" scope="singleton">
+    <property name="statementBlock">
+      <value>
+      <![CDATA[
+       		select id, cast(field1, double) as field1, field2, field3 from ESPTestEvent1 ;
+      ]]>
+      </value>
+    </property>
+  </bean>
+
+  <bean id="ESPTestEPL3" class="com.ebay.jetstream.event.processor.esper.EPL" scope="singleton">
+    <property name="statementBlock">
+      <value>
+      <![CDATA[
+        SELECT com.ebay.jetstream.util.StringUtils.convertToList('One, Two, Three, ') AS TopicList FROM ESPTestEvent1 /*$OUTPUT*/;
+      ]]>
+      </value>
+    </property>
+  </bean>
+
+  <bean id="ESPTestOnDemandQuery" class="com.ebay.jetstream.event.processor.esper.EPL" scope="singleton">
+    <property name="statementBlock">
+      <value>
+      <![CDATA[
+	    CREATE WINDOW SW.win:keepall() AS (V double, WorkerId int, field_id int);
+    	INSERT INTO SW SELECT field AS V, jetstream.event.worker_id AS WorkerId, field_id FROM ESPAggregationTestEvent;
+    	INSERT INTO SW SELECT Math.pow(field, 2.0) AS V, jetstream.event.worker_id AS WorkerId, field_id FROM ESPAggregationTestEvent;
+    	INSERT INTO SW SELECT Math.pow(field, 3.0) AS V, jetstream.event.worker_id AS WorkerId, field_id FROM ESPAggregationTestEvent;
+    	ON CleanupEvent DELETE FROM SW WHERE SW.WorkerId = CleanupEvent.WorkerId;
+    	SELECT * FROM OutputEvent /*$OUTPUT*/;
+      ]]>
+      </value>
+    </property>
+
+	<!-- Every time we need to aggregate some data we MUST use on demand queries to make aggregation flow synchronized -->
+	<property name="onDemandQueries">
+		<list>
+			<bean class="com.ebay.jetstream.event.processor.esper.OnDemandQuery">
+				<property name="query">
+					<value>
+						<!-- 
+							Read Esper documentation about named windows limitations first.
+							For example, you can't use INSERT INTO here.
+							Single request only! No semicolons!
+						 -->
+						<![CDATA[
+							SELECT WorkerId, field_id, AVG(V) AS AggregatedResult FROM SW GROUP BY WorkerId, field_id
+						]]>
+					</value>
+				</property>
+					<property name="cleanUpEvent" value="CleanupEvent" />
+				<property name="outputEvent" value="OutputEvent" />
+				<property name="workerIdentifier" value="WorkerId" />
+			</bean>
+		</list>
+	</property>
+  </bean>
+  <bean id="EspListener" class="com.ebay.jetstream.event.processor.esper.EsperEventListener"></bean>
+
+  <bean id="ESPTestProcessor" class="com.ebay.jetstream.event.processor.esper.EsperProcessor">
+  	<property name="esperEventListener" ref="EspListener"></property>
+    <property name="configuration" ref="EsperConfiguration"/>
+    <property name="epl" ref="ESPTestEPL1"/>
+  </bean>
+
+  <bean id="ESPTestProcessorOneEnginePerThread" class="com.ebay.jetstream.event.processor.esper.EsperProcessor">
+  	<property name="esperEventListener" ref="EspListener"></property>
+    <property name="configuration" ref="EsperConfigurationOneEnginePerThread"/>
+    <property name="epl" ref="ESPTestEPL1"/>
+  </bean>
+
+  <bean id="ESPTestProcessorOnDemandQuery" class="com.ebay.jetstream.event.processor.esper.EsperProcessor">
+  	<property name="esperEventListener" ref="EspListener"></property>
+    <property name="configuration" ref="EsperConfiguration"/>
+    <property name="epl" ref="ESPTestOnDemandQuery"/>
+  </bean>
+
+  <bean id="ESPTestProcessorXYZ" class="com.ebay.jetstream.event.processor.esper.EsperProcessor">
+  	<property name="esperEventListener" ref="EspListener"></property>
+    <property name="configuration" ref="EsperConfiguration"/>
+    <property name="epl" ref="ESPTestEPL2"/>
+  </bean>
+
+  <bean id="ESPTestSyncProcessor" class="com.ebay.jetstream.event.processor.esper.EsperProcessor">
+  	<property name="esperEventListener" ref="EspListener"></property>
+    <property name="configuration" ref="EsperConfigurationSync"/>
+    <property name="epl" ref="ESPTestEPL1"/>
+  </bean>
+
+  <bean id="ESPTestProcessorStringUtils" class="com.ebay.jetstream.event.processor.esper.EsperProcessor">
+  	<property name="esperEventListener" ref="EspListener"></property>
+    <property name="configuration" ref="EsperConfigurationSync"/>
+    <property name="epl" ref="ESPTestEPL3"/>
+  </bean>
+ 
+  <bean id="ESPTest" class="com.ebay.jetstream.event.processor.esper.ESPTest">
+  </bean>
+
+</beans>

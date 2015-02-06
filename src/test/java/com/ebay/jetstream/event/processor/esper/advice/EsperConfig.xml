@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Pulsar
+Copyright (C) 2013-2015 eBay Software Foundation
+Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE for full terms.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"
+  default-lazy-init="true">
+
+
+    <bean id="EsperProcessor1" class="com.ebay.jetstream.event.processor.esper.EsperProcessor">
+		<property name="esperEventListener" ref="EsperEventListener1" />
+		<property name="configuration" ref="EsperConfiguration1" />
+		<property name="epl" ref="EPL" />
+		<property name="eventSinks" ref="espersinks" /> 
+		<property name="esperExceptionHandler" ref="EsperExceptionHandler1"></property>
+		<property name="adviceListener" ref="AdviceListener" />
+	</bean>
+	
+	
+	<bean id="espersinks" class="com.ebay.jetstream.event.EventSinkList">
+		<constructor-arg>
+            <list>
+                <ref bean="espersink" />
+		    </list>
+        </constructor-arg>
+	</bean>
+	
+	<bean id="espersink" class="com.ebay.jetstream.event.processor.console.ConsoleLoggingProcessor" />
+	
+	<bean id="EsperExceptionHandler1" class="com.ebay.jetstream.event.processor.esper.EsperExceptionHandler" />
+	
+
+	<bean id="EsperEventListener1"
+		class="com.ebay.jetstream.event.processor.esper.EsperEventListener">	
+	</bean>
+	
+	<bean id="AdviceListener" class="com.ebay.jetstream.event.advice.DefaultAdviceImpl"/>
+	
+	<bean id="EsperConfiguration1"
+		class="com.ebay.jetstream.event.processor.esper.EsperConfiguration">
+		<property name="internalTimerEnabled" value="true" />
+		<property name="msecResolution" value="1" />
+		<property name="timeSourceNano" value="false" />
+		<property name="declaredEvents" ref="EventDefinition" />
+		<property name="listenerDispatchTimeout" value="1000" />
+		<property name="listenerDispatchPreserveOrder" value="false" />
+
+		<property name="insertIntoDispatchTimeout" value="100" />
+		<property name="insertIntoDispatchPreserveOrder" value="false" />
+		<property name="threadPoolSize" value="2" />
+		<property name="queueSizeLimit" value="30000000" />
+		<property name="executionLogging" value="true" />
+		<property name="exceptionHandlerFactoryClass" value="com.ebay.jetstream.event.processor.esper.JetstreamExceptionHandlerFactory"/>
+		<property name="timerLogging" value="true" />
+	</bean>
+	
+	<bean id="EventDefinition" class="com.ebay.jetstream.event.processor.esper.EsperDeclaredEvents">
+		<property name="eventTypes">
+			<list>
+
+				<bean class="com.ebay.jetstream.event.processor.esper.MapEventType">
+					<property name="eventAlias" value="TestEvent"/>
+					<property name="eventFields">
+						<map>
+							<entry key="id" value="java.lang.Long"/>
+							<entry key="cguid" value="java.lang.String"/>
+							<entry key="uid" value="java.lang.String"/>
+							<entry key="ip" value="java.lang.String"/>
+							<entry key="cost" value="java.lang.Integer"/>
+							<entry key="rid" value="java.lang.String"/>
+							<entry key="rta" value="java.lang.String"/>
+							<entry key="id1" value="java.lang.Integer"/>
+							
+						</map>
+					</property>
+				</bean>
+				<ref bean="badEvent" />
+				
+			
+			</list>
+		</property>
+	</bean>
+	
+	
+	<bean id ="badEvent" class="com.ebay.jetstream.event.processor.esper.MapEventType">
+		<property name="eventAlias" value="BadEvent"/>
+		<property name="eventFields">
+			<map>
+				<entry key="id" value="java.lang.Long"/>
+				<entry key="cguid" value="java.lang.String"/>
+				<entry key="uid" value="java.lang.String"/>
+				<entry key="ip" value="java.lang.String"/>
+				<entry key="cost" value="java.lang.Long"/>
+				<entry key="rid" value="java.lang.String"/>
+				<entry key="rta" value="java.lang.String"/>
+				<entry key="id1" value="java.lang.Integer"/>
+				
+			</map>
+		</property>
+	</bean>
+	
+	
+	 <bean id="EPL" class="com.ebay.jetstream.event.processor.esper.EPL" >
+    <property name="statementBlock">
+      <value>
+      <![CDATA[
+      		
+      		insert into temp 
+      			select cost as round , id from TestEvent ;
+      		
+      		
+      		insert into temp1
+      			select  sum(cost) as  round , id from BadEvent ;
+      			
+      			
+      		@OutputTo("espersink")
+      		select * from temp;
+      		
+      		
+      		@OutputTo("espersink")
+      		select round from temp1;
+      ]]>
+      </value>
+    </property>
+  </bean>
+  
+</beans>
