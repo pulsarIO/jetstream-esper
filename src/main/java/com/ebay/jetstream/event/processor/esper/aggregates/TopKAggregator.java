@@ -6,8 +6,7 @@ Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE 
 package com.ebay.jetstream.event.processor.esper.aggregates;
 
 
-
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +54,7 @@ public class TopKAggregator implements AggregationMethod {
 	public Object getValue() {
 		
 			
-		Map<Object, Long> topN = new HashMap<Object, Long>();
+		Map<Object, Long> topN = new LinkedHashMap<Object, Long>();
 		
 		if ((m_counter == null))
 			return topN;
