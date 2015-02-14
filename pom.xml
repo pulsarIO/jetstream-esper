@@ -1,130 +1,41 @@
-<?xml version="1.0"?>
-<!--
-Pulsar
-Copyright (C) 2013-2015 eBay Software Foundation
-Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE for full terms.
-  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<groupId>com.ebay.jetstream</groupId>
+	<artifactId>jetstream-root</artifactId>
+	<version>4.0.0-SNAPSHOT</version>
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.ebay.jetstream</groupId>
-		<artifactId>jetstream-parent</artifactId>
-		<version>4.0.0-SNAPSHOT</version>
-	</parent>
-	<artifactId>jetstream-esper</artifactId>
-	<packaging>jar</packaging>
-	<name>jetstream esper</name>
-    
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-        <license>
-            <name>GNU GENERAL PUBLIC LICENSE Version 2, June 1991</name>
-            <url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+	<packaging>pom</packaging>
+	<name>jetstream-root</name>
+	<description>Jetstream root POM</description>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.espertech</groupId>
-			<artifactId>esper</artifactId>
-			<version>5.1.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.espertech</groupId>
-			<artifactId>esper</artifactId>
-			<version>5.1.0</version>
-			<classifier>sources</classifier>
-		</dependency>
-        
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>2.7</version>
-		</dependency>
-        
-		<dependency>
-			<groupId>commons-jxpath</groupId>
-			<artifactId>commons-jxpath</artifactId>
-			<version>1.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.ebay.jetstream</groupId>
-			<artifactId>jetstreamframework</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-		<dependency>
-        	 <groupId>org.reflections</groupId>
-         	<artifactId>reflections</artifactId>
-         	<version>0.9.9-RC2</version>
-     	</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.9.5</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+	<licenses>
+        	<license>
+            		<name>The Apache Software License, Version 2.0</name>
+            		<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            		<distribution>repo</distribution>
+        	</license>
+        	<license>
+            		<name>GNU GENERAL PUBLIC LICENSE Version 2, June 1991</name>
+            		<url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
+            		<distribution>repo</distribution>
+        	</license>
+        </licenses>
+	
+	<modules>
+    		<module>jetstream-esper</module>
+    	</modules>
 
 	<build>
-		<finalName>${project.artifactId}.${project.version}.r${buildNumber}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.4.1</version>
 				<configuration>
-					<archive>
-						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-					</archive>
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- Apache Felix Bundle Plugin - For Generation of Manifest after Compile 
-				phase -->
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<!-- Configuration for generating the Manifest.mf -->
-				<configuration>
-					<!-- manifestLocation>src/main/resources/META-INF</manifestLocation -->
-					<!-- Manifest Headers which need to customized during manifest generation -->
-					<instructions>
-						<!-- Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${timestamp}</Bundle-Version -->
-						<_nouses>true</_nouses>
-						<Import-Package>*
-						</Import-Package>
-					</instructions>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
-	<distributionManagement>
-		<site />
-	</distributionManagement>
-
-
 </project>
