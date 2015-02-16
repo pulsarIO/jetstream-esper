@@ -125,6 +125,13 @@ Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE 
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.4.1</version>
+				<dependencies>
+        			<dependency>
+          				<groupId>org.apache.maven.scm</groupId>
+          				<artifactId>maven-scm-provider-gitexe</artifactId>
+          				<version>1.8.1</version>
+        			</dependency>
+       			</dependencies>
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<useReleaseProfile>false</useReleaseProfile>
