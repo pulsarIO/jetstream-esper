@@ -6,15 +6,22 @@ Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE 
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>com.ebay.jetstream</groupId>
 		<artifactId>jetstream-parent</artifactId>
-		<version>4.0.0-SNAPSHOT</version>
+		<version>4.0.0</version>
 	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jetstream-esper</artifactId>
+	<version>4.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>jetstream esper</name>
+
+	 <properties>
+        <jetstream.version>4.0.0</jetstream.version>
+    </properties>
     
     <licenses>
         <license>
@@ -58,13 +65,19 @@ Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE 
 		<dependency>
 			<groupId>com.ebay.jetstream</groupId>
 			<artifactId>jetstreamframework</artifactId>
-			<version>${project.parent.version}</version>
+			<version>${jetstream.version}</version>
 		</dependency>
 		<dependency>
         	 <groupId>org.reflections</groupId>
          	<artifactId>reflections</artifactId>
          	<version>0.9.9-RC2</version>
      	</dependency>
+     	<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+				<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
@@ -106,7 +119,19 @@ Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE 
      				 <groupId>org.apache.maven.plugins</groupId>
       				 <artifactId>maven-gpg-plugin</artifactId>
 			         <version>1.5</version>
-		        </plugin>
+		     </plugin>
+
+		     <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.4.1</version>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<useReleaseProfile>false</useReleaseProfile>
+                    <releaseProfiles>release</releaseProfiles>
+                    <goals>deploy</goals>
+				</configuration>
+			</plugin>
 			<!-- Apache Felix Bundle Plugin - For Generation of Manifest after Compile 
 				phase -->
 			<plugin>
