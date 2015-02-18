@@ -45,7 +45,7 @@ public class PublishOnAnnotationProcessor implements AnnotationProcessor {
 				if (strUrls == null && "urls".equals(attr.getName())) {
 
 					strUrls = (String) attr.getValue();
-					metadata.setTopics(strUrls);
+					metadata.setUrls(strUrls);
 				}
 			}
 		}

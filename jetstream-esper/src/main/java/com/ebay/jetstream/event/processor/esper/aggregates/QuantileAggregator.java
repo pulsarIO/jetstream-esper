@@ -12,7 +12,8 @@ import com.espertech.esper.epl.agg.aggregator.AggregationMethod;
  * @author shmurthy@ebay.com Esper aggregation method for computing 
  * the Quantile of element of type double provided to this aggregator
  * 
- * Usage: select percentile(element) as uniqueElement from stream
+ * Usage: select percentile(quantile, element) as percentile from stream
+ * quantile must be between 0 - 1. 
  */
 
 public class QuantileAggregator implements AggregationMethod {
