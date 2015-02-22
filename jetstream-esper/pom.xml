@@ -14,7 +14,7 @@ Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE 
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jetstream-esper</artifactId>
-	<version>4.0.1</version>
+	<version>4.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>jetstream esper</name>
 
