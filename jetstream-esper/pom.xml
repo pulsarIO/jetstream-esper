@@ -14,7 +14,7 @@ Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE 
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jetstream-esper</artifactId>
-	<version>4.0.2</version>
+	<version>4.0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>jetstream esper</name>
 
@@ -34,7 +34,7 @@ Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE 
 		<connection>scm:git:git@github.com:pulsarIO/jetstream-esper.git</connection>
 		<url>scm:git:git@github.com:pulsarIO/jetstream-esper.git</url>
 		<developerConnection>scm:git:git@github.com:pulsarIO/jetstream-esper.git</developerConnection>
-	  <tag>jetstream-esper-root-4.0.2</tag>
+	  <tag>HEAD</tag>
   	</scm>
     
 	<dependencies>
