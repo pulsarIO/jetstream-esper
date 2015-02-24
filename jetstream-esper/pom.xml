@@ -9,25 +9,20 @@ Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE 
 	<parent>
 		<groupId>com.ebay.jetstream</groupId>
 		<artifactId>jetstream-parent</artifactId>
-		<version>4.0.1</version>
+		<version>4.0.2</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jetstream-esper</artifactId>
-	<version>4.0.2-SNAPSHOT</version>
+	<version>4.0.2</version>
 	<packaging>jar</packaging>
 	<name>jetstream esper</name>
 
 	 <properties>
-        <jetstream.version>4.0.1</jetstream.version>
+        <jetstream.version>4.0.2</jetstream.version>
     </properties>
     
     <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
         <license>
             <name>GNU GENERAL PUBLIC LICENSE Version 2, June 1991</name>
             <url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
@@ -35,6 +30,13 @@ Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE 
         </license>
     </licenses>
 
+   	<scm>
+		<connection>scm:git:git@github.com:pulsarIO/jetstream-esper.git</connection>
+		<url>scm:git:git@github.com:pulsarIO/jetstream-esper.git</url>
+		<developerConnection>scm:git:git@github.com:pulsarIO/jetstream-esper.git</developerConnection>
+	  <tag>jetstream-esper-root-4.0.2</tag>
+  	</scm>
+    
 	<dependencies>
 		<dependency>
 			<groupId>com.espertech</groupId>
