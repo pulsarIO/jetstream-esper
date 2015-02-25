@@ -1,1 +1,16 @@
-/target
+# maven target
+target
+target/*
+*/target/*
+
+# intellij files
+/.idea
+**.iml
+**.patch
+
+# eclipse files
+.metadata
+.project
+.settings
+.prefs
+.classpath
