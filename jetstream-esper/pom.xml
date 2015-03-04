@@ -9,7 +9,7 @@ Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE 
 	<parent>
 		<groupId>com.ebay.jetstream</groupId>
 		<artifactId>jetstream-parent</artifactId>
-		<version>4.0.2</version>
+		<version>4.0.3-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -19,7 +19,7 @@ Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE 
 	<name>jetstream esper</name>
 
 	 <properties>
-        <jetstream.version>4.0.2</jetstream.version>
+        <jetstream.version>4.0.3-SNAPSHOT</jetstream.version>
     </properties>
     
     <licenses>
