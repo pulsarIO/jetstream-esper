@@ -41,13 +41,13 @@ Dual licensed under the Apache 2.0 license and the GPL v2 license.  See LICENSE 
 		<dependency>
 			<groupId>com.espertech</groupId>
 			<artifactId>esper</artifactId>
-			<version>5.1.0</version>
+			<version>5.2.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.espertech</groupId>
 			<artifactId>esper</artifactId>
-			<version>5.1.0</version>
+			<version>5.2.0</version>
 			<classifier>sources</classifier>
 		</dependency>
         
